@@ -2,6 +2,9 @@ int distance;
 
 int startTime;
 int curTime;
+float dt;
+
+boolean isRunning;
 
 Grid grid;
 
@@ -11,10 +14,11 @@ void setup() {
   int cubeSize = 10;
   int cubePadding = 5;
   
+  // Globals
   startTime = millis();
   curTime = millis();
-  
   distance = 750;
+  isRunning = true;
   
   // Set window size
   size(640, 640, OPENGL); 
@@ -27,13 +31,23 @@ void setup() {
 void draw() {
   background(0); 
   stroke(0);
-  //curTime = millis();
-  //if(curTime - startTime > 1000) {
-    grid.update();
-    startTime = millis(); 
-  //}
-  grid.show();
+  if(isRunning) {
+    curTime = millis();
+    dt = float((curTime - startTime))/float(startTime);
+    if(curTime - startTime > 1000) {
+      grid.update();
+      startTime = millis(); 
+    }
+  }
+  grid.show(dt);
 } 
+
+// Make sure you click in the scene before trying to press keys...
+void keyReleased() {
+  if(key == ' ') {
+    isRunning = !isRunning;
+  } 
+}
 
 // Class definitions
 class Cube {
@@ -61,13 +75,13 @@ class Cube {
     isAlive = tAlive;
   }
   
-  void update() {
+  void update(float dt) {
     pushMatrix();
     if(isAlive) {
-      fill(curColor);
+      fill(aliveColor);
       stroke(0);
     } else {
-      noFill();  
+      fill(color(0));
       noStroke();
     }
     translate(xPos, yPos, zPos);
@@ -76,12 +90,12 @@ class Cube {
   }
   
   void kill() {
-    curColor = color(255);
+    //curColor = color(0);
     isAlive = false;
   }
   
   void spawn() {
-    curColor = aliveColor;
+    //curColor = aliveColor;
     isAlive = true;
   }
   
@@ -110,7 +124,7 @@ class Grid {
           curY = yc * (cubeSize + cubePadding);
           curZ = zc * (cubeSize + cubePadding);
           seed = int(random(100));
-          cubes[xc][yc][zc] = new Cube(color(random(255), 25, 10), curX, curY, curZ, cubeSize, seed == 1);
+          cubes[xc][yc][zc] = new Cube(color(255, 25, 10), curX, curY, curZ, cubeSize, seed == 1);
         }
       } 
     } 
@@ -118,11 +132,11 @@ class Grid {
     mid = (mySize * (cubeSize + cubePadding)) / 2.0;
   }
   
-  void show() {
+  void show(float dt) {
     for(int i = 0; i < cubes.length; i++) {
       for(int j = 0; j < cubes[i].length; j++) {
         for(int k = 0; k < cubes[i][j].length; k++) {
-          cubes[i][j][k].update();
+          cubes[i][j][k].update(dt);
         } 
       }
     }  
@@ -159,6 +173,7 @@ class Grid {
       for(int cy = j - 1; cy <= j + 1; cy++) {
         for(int cz = k - 1; cz <= k + 1; cz++) {
           if(cx > 0 && cx < cubes.length && cy > 0 && cy < cubes[0].length && cz > 0 && cz < cubes[0][0].length) {
+            
             if(cubes[cx][cy][cz].isAlive) {
               count++;  
             }
