@@ -81,10 +81,12 @@ for x in range(GRID_SIZE):
 mid_x = float((grid[-1][0][0].position[0] + box_size) - grid[0][0][0].position[0]) / 2
 mid_y = float((grid[0][-1][0].position[1] + box_size) - grid[0][0][0].position[1]) / 2
 mid_z = float((grid[0][0][-1].position[2] - box_size) + grid[0][0][0].position[2]) / 2
-grid[0][0][0].color = (1, 0, 0)
 print mid_x, mid_y, mid_z
+ang = 0
+
 @window.event
 def on_draw():
+    global ang
     glViewport(0, 0, window.width, window.height)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
@@ -96,23 +98,16 @@ def on_draw():
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
     glPushMatrix()
-    glTranslatef(mid_x, mid_y, -100)
-    #glRotatef(20, 1, 0, 0)
+    glTranslatef(0, 0, -200)
+    glRotatef(ang, 1, 0, 0)
+    glRotatef(ang, 0, 1, 0)
+    glTranslatef(-mid_x, -mid_y, -mid_z)
     for x in range(GRID_SIZE):
         for y in range(GRID_SIZE):
             for z in range(GRID_SIZE):
                 grid[x][y][z].draw()
-    glColor3f(1, 0, 0)
-    glBegin(GL_LINES)
-    glVertex3f(mid_x, -100, 0)
-    glVertex3f(mid_x, 100, 0)
-    glVertex3f(-100, mid_y, 0)
-    glVertex3f(100, mid_y, 0)
-    glVertex3f(-100, -100, mid_z)
-    glVertex3f(200, 200, mid_z)
-    glEnd()
-    glTranslatef(-mid_x, -mid_y, -mid_z)
     glPopMatrix()
+    ang += 5
 
 def update(t):
     global fovy, rotate
