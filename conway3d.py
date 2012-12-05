@@ -82,6 +82,7 @@ for x in range(GRID_SIZE):
             grid[x][y][z] = Box(xc, yc, zc, box_size, (random.random(), random.random(), 1), GL_QUADS)
 
 grid[0][0][0].color = (1, 0, 0)
+print grid[0][0][0].position, grid[4][4][4].position
 print mid_x, mid_y, mid_z
 @window.event
 def on_draw():
