@@ -80,9 +80,9 @@ for x in range(GRID_SIZE):
             yc = (y * padding) #- mid_y
             zc = (-1 * z * padding) - 100
             grid[x][y][z] = Box(xc, yc, zc, box_size, (random.random(), random.random(), 1), GL_QUADS)
+            print grid[x][y][z].position
 
 grid[0][0][0].color = (1, 0, 0)
-print grid[0][0][0].position, grid[4][4][4].position
 print mid_x, mid_y, mid_z
 @window.event
 def on_draw():
@@ -97,7 +97,7 @@ def on_draw():
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
     glPushMatrix()
-    glTranslatef(mid_x, mid_y, -50) # Why is this backwards
+    glTranslatef(mid_x, mid_y, -100)
     #glRotatef(20, 1, 0, 0)
     for x in range(GRID_SIZE):
         for y in range(GRID_SIZE):
@@ -107,15 +107,12 @@ def on_draw():
     glBegin(GL_LINES)
     glVertex3f(mid_x, -100, 0)
     glVertex3f(mid_x, 100, 0)
-    glEnd()
-    glBegin(GL_LINES)
     glVertex3f(-100, mid_y, 0)
     glVertex3f(100, mid_y, 0)
-    glEnd()
-    glBegin(GL_LINES)
     glVertex3f(-100, -100, mid_z)
     glVertex3f(200, 200, mid_z)
     glEnd()
+    glTranslatef(-mid_x, -mid_y, -mid_z)
     glPopMatrix()
 
 def update(t):
