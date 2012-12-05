@@ -9,7 +9,7 @@ window.push_handlers(keys)
 glEnable(pyglet.gl.GL_DEPTH_TEST)
 
 fovy = 60.0
-GRID_SIZE = 4
+GRID_SIZE = 5
 grid = [[[0] * GRID_SIZE for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
 
 class Box(object):
@@ -68,18 +68,21 @@ class Box(object):
         glEnd()
         glPopMatrix()
 
-mid_x = (GRID_SIZE * 20) / 2
-mid_y = (GRID_SIZE * 20) / 2
+box_size = 10
+padding = 20
+mid_x = (((GRID_SIZE - 1) * (padding - box_size)) + (GRID_SIZE * box_size)) / 2
+mid_y = (((GRID_SIZE - 1) * (padding - box_size)) + (GRID_SIZE * box_size)) / 2
+mid_z = ((((GRID_SIZE - 1) * -1 * (padding - box_size)) + (GRID_SIZE * box_size))) / 2
 for x in range(GRID_SIZE):
     for y in range(GRID_SIZE):
         for z in range(GRID_SIZE):
-            xc = (x * 20) #- mid_x
-            yc = (y * 20) #- mid_y
-            zc = (-1 * z * 20) - 100
-            grid[x][y][z] = Box(xc, yc, zc, 10, (random.random(), random.random(), 1), GL_QUADS)
+            xc = (x * padding) #- mid_x
+            yc = (y * padding) #- mid_y
+            zc = (-1 * z * padding) - 100
+            grid[x][y][z] = Box(xc, yc, zc, box_size, (random.random(), random.random(), 1), GL_QUADS)
 
 grid[0][0][0].color = (1, 0, 0)
-
+print mid_x, mid_y, mid_z
 @window.event
 def on_draw():
     glViewport(0, 0, window.width, window.height)
@@ -92,7 +95,9 @@ def on_draw():
 
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
+    glPushMatrix()
     glTranslatef(-mid_x, -mid_y, -50)
+    #glRotatef(45, 0, 1, 0)
     for x in range(GRID_SIZE):
         for y in range(GRID_SIZE):
             for z in range(GRID_SIZE):
@@ -101,6 +106,16 @@ def on_draw():
     glVertex3f(mid_x, -100, 0)
     glVertex3f(mid_x, 100, 0)
     glEnd()
+    glBegin(GL_LINES)
+    glVertex3f(-100, mid_y, 0)
+    glVertex3f(100, mid_y, 0)
+    glEnd()
+    glBegin(GL_LINES)
+    glVertex3f(-100, -100, mid_z)
+    glVertex3f(100, 100, mid_z)
+    glEnd()
+    glPopMatrix()
+
 def update(t):
     global fovy
     if keys[pyglet.window.key.UP]:
