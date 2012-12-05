@@ -69,18 +69,18 @@ class Box(object):
         glPopMatrix()
 
 box_size = 10
-padding = 20
+padding = 10
 mid_x = (((GRID_SIZE - 1) * (padding - box_size)) + (GRID_SIZE * box_size)) / 2
 mid_y = (((GRID_SIZE - 1) * (padding - box_size)) + (GRID_SIZE * box_size)) / 2
 mid_z = -100 + (-1 * ((((GRID_SIZE - 1) * (padding - box_size)) + (GRID_SIZE * box_size)))) / 2
 for x in range(GRID_SIZE):
     for y in range(GRID_SIZE):
         for z in range(GRID_SIZE):
-            xc = (x * padding) #- mid_x
-            yc = (y * padding) #- mid_y
-            zc = (-1 * z * padding) - 100
+            xc = (x * (box_size + padding))
+            yc = (y * (box_size + padding))
+            zc = (-1 * z * box_size + padding) - 100
             grid[x][y][z] = Box(xc, yc, zc, box_size, (random.random(), random.random(), 1), GL_QUADS)
-            print grid[x][y][z].position
+            print xc, yc, zc
 
 grid[0][0][0].color = (1, 0, 0)
 print mid_x, mid_y, mid_z
