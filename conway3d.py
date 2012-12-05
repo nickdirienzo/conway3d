@@ -70,18 +70,17 @@ class Box(object):
 
 box_size = 10
 padding = 10
-mid_x = (((GRID_SIZE - 1) * (padding - box_size)) + (GRID_SIZE * box_size)) / 2
-mid_y = (((GRID_SIZE - 1) * (padding - box_size)) + (GRID_SIZE * box_size)) / 2
-mid_z = -100 + (-1 * ((((GRID_SIZE - 1) * (padding - box_size)) + (GRID_SIZE * box_size)))) / 2
 for x in range(GRID_SIZE):
     for y in range(GRID_SIZE):
         for z in range(GRID_SIZE):
             xc = (x * (box_size + padding))
             yc = (y * (box_size + padding))
-            zc = (-1 * z * box_size + padding) - 100
+            zc = (-1 * z * (box_size + padding)) - 100
             grid[x][y][z] = Box(xc, yc, zc, box_size, (random.random(), random.random(), 1), GL_QUADS)
-            print xc, yc, zc
 
+mid_x = float((grid[-1][0][0].position[0] + box_size) - grid[0][0][0].position[0]) / 2
+mid_y = float((grid[0][-1][0].position[1] + box_size) - grid[0][0][0].position[1]) / 2
+mid_z = float((grid[0][0][-1].position[2] - box_size) + grid[0][0][0].position[2]) / 2
 grid[0][0][0].color = (1, 0, 0)
 print mid_x, mid_y, mid_z
 @window.event
