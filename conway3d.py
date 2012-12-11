@@ -4,7 +4,7 @@ import time
 import pyglet
 from pyglet.gl import *
 
-from models import Box, Grid, Camera
+from models import Box, Grid, Camera, RoundTime
 
 window = pyglet.window.Window()
 keys = pyglet.window.key.KeyStateHandler()
@@ -13,13 +13,15 @@ glEnable(GL_DEPTH_TEST)
 glEnable(GL_BLEND)
 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
+rt = RoundTime(5)
+
 pos = [0, 0, -200]
 camera = Camera(pos)
 
 grid_size = 5
 box_size = 10
 box_spacing = 10
-grid = Grid(grid_size, box_size, box_spacing)
+grid = Grid(grid_size, box_size, box_spacing, rt)
 
 @window.event
 def on_draw():

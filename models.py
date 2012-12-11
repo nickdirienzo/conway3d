@@ -4,6 +4,10 @@ import time
 import pyglet
 from pyglet.gl import *
 
+class RoundTime(object):
+    def __init__(self, t):
+        self.time = t
+
 class ColorPalette(object):
     def __init__(self):
         self.colors = (
@@ -25,7 +29,7 @@ class Camera(object):
         self.position[2] += z
 
 class Box(object):
-    def __init__(self, x, y, z, size, color, render_type, alive):
+    def __init__(self, x, y, z, size, color, render_type, alive, r):
         self.position = [x, y, z]
         self.alive_color = color
         self.dead_color = (1, 1, 1, 0)
@@ -33,7 +37,8 @@ class Box(object):
         self.size = size
         self.rt = render_type
         self.alive = alive
-        self.color_change_duration = 3
+        self.round_time = r
+        self.color_change_duration = self.round_time.time / 2
         self.start_time = time.time()
 
     def kill(self):
@@ -110,7 +115,7 @@ class Box(object):
 
 class Grid(object):
     
-    def __init__(self, size, box_size, box_spacing):
+    def __init__(self, size, box_size, box_spacing, rt):
         self.size = size
         self.box_size = box_size
         self.box_spacing = box_spacing
@@ -123,13 +128,14 @@ class Grid(object):
                     yc = (y * (self.box_size + self.box_spacing))
                     zc = (-1 * z * (self.box_size + self.box_spacing)) - 100
                     color = random.sample(palette.colors, 1)[0]
-                    self.grid[x][y][z] = Box(xc, yc, zc, self.box_size, color, GL_QUADS, random.random() < 0.4)
+                    self.grid[x][y][z] = Box(xc, yc, zc, self.box_size, color, GL_QUADS, random.random() < 0.4, rt)
         self.mid_x = float((self.grid[-1][0][0].position[0] + self.box_size) - self.grid[0][0][0].position[0]) / 2
         self.mid_y = float((self.grid[0][-1][0].position[1] + self.box_size) - self.grid[0][0][0].position[1]) / 2
         self.mid_z = float((self.grid[0][0][-1].position[2] - self.box_size) + self.grid[0][0][0].position[2]) / 2
         self.heading = [0, 0]
         self.start_time = time.time()
-        self.round_time = 5
+        self.rt = rt
+        self.round_time = self.rt.time
 
     def draw(self):
         for x in range(self.size):
