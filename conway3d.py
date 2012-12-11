@@ -9,7 +9,9 @@ from models import Box, Grid, Camera
 window = pyglet.window.Window()
 keys = pyglet.window.key.KeyStateHandler()
 window.push_handlers(keys)
-glEnable(pyglet.gl.GL_DEPTH_TEST)
+glEnable(GL_DEPTH_TEST)
+glEnable(GL_BLEND)
+glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 pos = [0, 0, -200]
 camera = Camera(pos)
@@ -58,7 +60,6 @@ def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
         grid.spin_over_x(3)
 
 def update(t):
-    global position
     if keys[pyglet.window.key.UP]:
         grid.spin_over_x(-3)
     if keys[pyglet.window.key.DOWN]:
