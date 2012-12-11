@@ -15,13 +15,13 @@ glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 rt = RoundTime(5)
 
-pos = [0, 0, -200]
-camera = Camera(pos)
-
-grid_size = 5
+grid_size = 3
 box_size = 10
 box_spacing = 10
 grid = Grid(grid_size, box_size, box_spacing, rt)
+
+pos = [0, 0, -((grid_size / 2) * box_size * box_size)]
+camera = Camera(pos)
 
 @window.event
 def on_draw():

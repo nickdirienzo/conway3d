@@ -128,7 +128,7 @@ class Grid(object):
                     yc = (y * (self.box_size + self.box_spacing))
                     zc = (-1 * z * (self.box_size + self.box_spacing)) - 100
                     color = random.sample(palette.colors, 1)[0]
-                    self.grid[x][y][z] = Box(xc, yc, zc, self.box_size, color, GL_QUADS, random.random() < 0.4, rt)
+                    self.grid[x][y][z] = Box(xc, yc, zc, self.box_size, color, GL_QUADS, random.random() < 0.2, rt)
         self.mid_x = float((self.grid[-1][0][0].position[0] + self.box_size) - self.grid[0][0][0].position[0]) / 2
         self.mid_y = float((self.grid[0][-1][0].position[1] + self.box_size) - self.grid[0][0][0].position[1]) / 2
         self.mid_z = float((self.grid[0][0][-1].position[2] - self.box_size) + self.grid[0][0][0].position[2]) / 2
