@@ -24,6 +24,17 @@ pos = [0, 0, -((grid_size / 2) * box_size * box_size)]
 camera = Camera(pos)
 
 text = pyglet.text.Label('', x=5, y=5, font_name='Arial', font_size=16)
+size_text = pyglet.text.Label('', x=window.width - 200, y=5, font_name='Arial', font_size=16)
+
+def new_game(gs):
+    global grid, camera, grid_size
+    grid_size = gs
+    box_size = 10
+    box_spacing = 10
+    grid = Grid(grid_size, box_size, box_spacing, rt.time)
+
+    pos = [0, 0, -((grid_size / 2) * box_size * box_size)]
+    camera = Camera(pos)
 
 @window.event
 def on_draw():
@@ -51,6 +62,8 @@ def on_draw():
     glMatrixMode(GL_MODELVIEW)
     text.text = str(rt)
     text.draw()
+    size_text.text = 'Grid Size: %s' % grid_size
+    size_text.draw()
 
 @window.event
 def on_mouse_scroll(x, y, scroll_x, scroll_y):
@@ -70,15 +83,17 @@ def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     elif dy > 0:
         grid.spin_over_x(3)
 
+@window.event
+def on_key_release(symbol, modifiers):
+    if symbol == pyglet.window.key.SPACE:
+        new_game(grid_size)
+    if symbol == pyglet.window.key.UP:
+        new_game(grid_size + 1)
+    if symbol == pyglet.window.key.DOWN:
+        if grid_size > 2:
+            new_game(grid_size - 1)
+
 def update(t):
-    if keys[pyglet.window.key.UP]:
-        grid.spin_over_x(-3)
-    if keys[pyglet.window.key.DOWN]:
-        grid.spin_over_x(3)
-    if keys[pyglet.window.key.LEFT]:
-        grid.spin_over_y(-3)
-    if keys[pyglet.window.key.RIGHT]:
-        grid.spin_over_y(3)
     if keys[pyglet.window.key._1]:
         rt.normal_speed()
         grid.update_rt(rt.time)
