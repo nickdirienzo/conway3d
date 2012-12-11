@@ -7,6 +7,23 @@ from pyglet.gl import *
 class RoundTime(object):
     def __init__(self, t):
         self.time = t
+        self.original = t
+        self.speed = 1
+    
+    def normal_speed(self):
+        self.time = self.original
+        self.speed = 1
+    
+    def double_speed(self):
+        self.time = 0.5 * self.original
+        self.speed = 2
+
+    def triple_speed(self):
+        self.time = 0.3333 * self.original
+        self.speed = 3
+
+    def __str__(self):
+        return '%sx Generation Speed' % self.speed
 
 class ColorPalette(object):
     def __init__(self):
@@ -29,7 +46,7 @@ class Camera(object):
         self.position[2] += z
 
 class Box(object):
-    def __init__(self, x, y, z, size, color, render_type, alive, r):
+    def __init__(self, x, y, z, size, color, render_type, alive, t):
         self.position = [x, y, z]
         self.alive_color = color
         self.dead_color = (1, 1, 1, 0)
@@ -37,8 +54,7 @@ class Box(object):
         self.size = size
         self.rt = render_type
         self.alive = alive
-        self.round_time = r
-        self.color_change_duration = self.round_time.time / 2
+        self.color_change_duration = t / 2
         self.start_time = time.time()
 
     def kill(self):
@@ -57,9 +73,10 @@ class Box(object):
                     temp.append((1 - a) * self.dead_color[i] + a * self.alive_color[i])
                 self.cur_color = tuple(temp)
             else:
-                for i in range(len(self.cur_color)):
-                    temp.append((1 - a) * self.alive_color[i] + a * self.dead_color[i])
-                self.cur_color = tuple(temp)
+                #for i in range(len(self.cur_color)):
+                #    temp.append((1 - a) * self.alive_color[i] + a * self.dead_color[i])
+                #self.cur_color = tuple(temp)
+                self.cur_color = self.dead_color
         else:
             a = 0
             self.start_time = time.time()
@@ -115,7 +132,7 @@ class Box(object):
 
 class Grid(object):
     
-    def __init__(self, size, box_size, box_spacing, rt):
+    def __init__(self, size, box_size, box_spacing, t):
         self.size = size
         self.box_size = box_size
         self.box_spacing = box_spacing
@@ -128,14 +145,13 @@ class Grid(object):
                     yc = (y * (self.box_size + self.box_spacing))
                     zc = (-1 * z * (self.box_size + self.box_spacing)) - 100
                     color = random.sample(palette.colors, 1)[0]
-                    self.grid[x][y][z] = Box(xc, yc, zc, self.box_size, color, GL_QUADS, random.random() < 0.2, rt)
+                    self.grid[x][y][z] = Box(xc, yc, zc, self.box_size, color, GL_QUADS, random.random() < 0.2, t)
         self.mid_x = float((self.grid[-1][0][0].position[0] + self.box_size) - self.grid[0][0][0].position[0]) / 2
         self.mid_y = float((self.grid[0][-1][0].position[1] + self.box_size) - self.grid[0][0][0].position[1]) / 2
         self.mid_z = float((self.grid[0][0][-1].position[2] - self.box_size) + self.grid[0][0][0].position[2]) / 2
         self.heading = [0, 0]
         self.start_time = time.time()
-        self.rt = rt
-        self.round_time = self.rt.time
+        self.round_time = t
 
     def draw(self):
         for x in range(self.size):
@@ -153,6 +169,13 @@ class Grid(object):
                     else:
                         self.play_round(x, y, z)
                         self.start_time = time.time()
+    
+    def update_rt(self, t):
+        self.round_time = t
+        for x in range(self.size):
+            for y in range(self.size):
+                for z in range(self.size):
+                    self.grid[x][y][z].color_change_duration = t / 2
 
     def spin_over_x(self, x):
         self.heading[0] += x

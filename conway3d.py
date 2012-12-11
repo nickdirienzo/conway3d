@@ -18,10 +18,12 @@ rt = RoundTime(5)
 grid_size = 3
 box_size = 10
 box_spacing = 10
-grid = Grid(grid_size, box_size, box_spacing, rt)
+grid = Grid(grid_size, box_size, box_spacing, rt.time)
 
 pos = [0, 0, -((grid_size / 2) * box_size * box_size)]
 camera = Camera(pos)
+
+text = pyglet.text.Label('', x=5, y=5, font_name='Arial', font_size=16)
 
 @window.event
 def on_draw():
@@ -42,6 +44,13 @@ def on_draw():
     glTranslatef(-grid.mid_x, -grid.mid_y, -grid.mid_z) # 1st
     grid.draw()
     glPopMatrix()
+
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluOrtho2D(0,640,0,480)
+    glMatrixMode(GL_MODELVIEW)
+    text.text = str(rt)
+    text.draw()
 
 @window.event
 def on_mouse_scroll(x, y, scroll_x, scroll_y):
@@ -70,6 +79,15 @@ def update(t):
         grid.spin_over_y(-3)
     if keys[pyglet.window.key.RIGHT]:
         grid.spin_over_y(3)
+    if keys[pyglet.window.key._1]:
+        rt.normal_speed()
+        grid.update_rt(rt.time)
+    if keys[pyglet.window.key._2]:
+        rt.double_speed()
+        grid.update_rt(rt.time)
+    if keys[pyglet.window.key._3]:
+        rt.triple_speed()
+        grid.update_rt(rt.time)
     grid.update(t)
 
 pyglet.clock.schedule_interval(update,1/24.0)
