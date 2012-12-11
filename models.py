@@ -49,86 +49,90 @@ class Box(object):
     def __init__(self, x, y, z, size, color, render_type, alive, t):
         self.position = [x, y, z]
         self.alive_color = color
-        self.dead_color = (1, 1, 1, 0)
+        c = list(color)
+        c[3] = 0
+        self.dead_color = tuple(c)
         self.cur_color = color 
         self.size = size
         self.rt = render_type
         self.alive = alive
-        self.color_change_duration = t / 2
+        self.color_change_duration = t
         self.start_time = time.time()
+        self.updated = False
 
     def kill(self):
         self.alive = False
+        self.updated = True
 
     def live(self):
         self.alive = True
+        self.updated = True
 
     def update(self, dt):
-        temp = list()
+        c = list(self.cur_color)
         t = time.time() - self.start_time
         if t <= self.color_change_duration:
             a = t / self.color_change_duration
-            if self.alive:
-                for i in range(len(self.cur_color)):
-                    temp.append((1 - a) * self.dead_color[i] + a * self.alive_color[i])
-                self.cur_color = tuple(temp)
-            else:
-                #for i in range(len(self.cur_color)):
-                #    temp.append((1 - a) * self.alive_color[i] + a * self.dead_color[i])
-                #self.cur_color = tuple(temp)
-                self.cur_color = self.dead_color
+            if self.updated:
+                #if self.alive:
+                c[3] = ((1 - a) * self.dead_color[3] + a * self.alive_color[3])
+                #else:
+                #    c[3] = ((1 - a) * self.alive_color[3] + a * self.dead_color[3])
+                self.cur_color = tuple(c)
         else:
-            a = 0
+            a = 1
             self.start_time = time.time()
+            self.updated = False
 
     def draw(self):
-        x, y, z = self.position
-        glPushMatrix()
-        glColor4f(self.cur_color[0], self.cur_color[1], self.cur_color[2], self.cur_color[3])
-        glTranslatef(x, y, z)
-        # Front face
-        glBegin(self.rt)
-        glVertex3f(0, 0, 0)
-        glVertex3f(self.size, 0, 0)
-        glVertex3f(self.size, self.size, 0)
-        glVertex3f(0, self.size, 0)
-        glEnd()
-        # Left face
-        glBegin(self.rt)
-        glVertex3f(0, 0, 0)
-        glVertex3f(0, 0, -self.size)
-        glVertex3f(0, self.size, -self.size)
-        glVertex3f(0, self.size, 0)
-        glEnd()
-        # Back face
-        glBegin(self.rt)
-        glVertex3f(0, 0, -self.size)
-        glVertex3f(0, self.size, -self.size)
-        glVertex3f(self.size, self.size, -self.size)
-        glVertex3f(self.size, 0, -self.size)
-        glEnd()
-        # Right face
-        glBegin(self.rt)
-        glVertex3f(self.size, 0, 0)
-        glVertex3f(self.size, self.size, 0)
-        glVertex3f(self.size, self.size, -self.size)
-        glVertex3f(self.size, 0, -self.size)
-        glEnd()
-        # Top face
-        glBegin(self.rt)
-        glVertex3f(0, self.size, 0)
-        glVertex3f(0, self.size, -self.size)
-        glVertex3f(self.size, self.size, -self.size)
-        glVertex3f(self.size, self.size, 0)
-        glEnd()
-        # Bottom face
-        glBegin(self.rt)
-        glVertex3f(0, 0, 0)
-        glVertex3f(0, 0, -self.size)
-        glVertex3f(self.size, 0, -self.size)
-        glVertex3f(self.size, 0, 0)
-        glEnd()
-        glPopMatrix()
+        if self.alive:
+            x, y, z = self.position
+            glPushMatrix()
+            glColor4f(self.cur_color[0], self.cur_color[1], self.cur_color[2], self.cur_color[3])
+            glTranslatef(x, y, z)
+            # Front face
+            glBegin(self.rt)
+            glVertex3f(0, 0, 0)
+            glVertex3f(self.size, 0, 0)
+            glVertex3f(self.size, self.size, 0)
+            glVertex3f(0, self.size, 0)
+            glEnd()
+            # Left face
+            glBegin(self.rt)
+            glVertex3f(0, 0, 0)
+            glVertex3f(0, 0, -self.size)
+            glVertex3f(0, self.size, -self.size)
+            glVertex3f(0, self.size, 0)
+            glEnd()
+            # Back face
+            glBegin(self.rt)
+            glVertex3f(0, 0, -self.size)
+            glVertex3f(0, self.size, -self.size)
+            glVertex3f(self.size, self.size, -self.size)
+            glVertex3f(self.size, 0, -self.size)
+            glEnd()
+            # Right face
+            glBegin(self.rt)
+            glVertex3f(self.size, 0, 0)
+            glVertex3f(self.size, self.size, 0)
+            glVertex3f(self.size, self.size, -self.size)
+            glVertex3f(self.size, 0, -self.size)
+            glEnd()
+            # Top face
+            glBegin(self.rt)
+            glVertex3f(0, self.size, 0)
+            glVertex3f(0, self.size, -self.size)
+            glVertex3f(self.size, self.size, -self.size)
+            glVertex3f(self.size, self.size, 0)
+            glEnd()
+            # Bottom face
+            glBegin(self.rt)
+            glVertex3f(0, 0, 0)
+            glVertex3f(0, 0, -self.size)
+            glVertex3f(self.size, 0, -self.size)
+            glVertex3f(self.size, 0, 0)
+            glEnd()
+            glPopMatrix()
 
 class Grid(object):
     
@@ -175,7 +179,7 @@ class Grid(object):
         for x in range(self.size):
             for y in range(self.size):
                 for z in range(self.size):
-                    self.grid[x][y][z].color_change_duration = t / 2
+                    self.grid[x][y][z].color_change_duration = t
 
     def spin_over_x(self, x):
         self.heading[0] += x

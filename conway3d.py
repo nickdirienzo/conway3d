@@ -15,7 +15,7 @@ glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 rt = RoundTime(5)
 
-grid_size = 3
+grid_size = 5
 box_size = 10
 box_spacing = 10
 grid = Grid(grid_size, box_size, box_spacing, rt.time)
