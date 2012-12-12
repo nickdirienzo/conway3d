@@ -1,8 +1,10 @@
+import math
 import random
 import time
 
 import pyglet
 from pyglet.gl import *
+
 
 class RoundTime(object):
     def __init__(self, t):
@@ -68,11 +70,11 @@ class Box(object):
         self.alive = True
         self.updated = True
 
-    def update(self, dt):
+    def update(self, t):
         c = list(self.cur_color)
-        t = time.time() - self.start_time
+        tr = t - self.start_time
         if t <= self.color_change_duration:
-            a = t / self.color_change_duration
+            a = tr / self.color_change_duration
             if self.updated:
                 #if self.alive:
                 c[3] = ((1 - a) * self.dead_color[3] + a * self.alive_color[3])
@@ -156,6 +158,7 @@ class Grid(object):
         self.heading = [0, 0]
         self.start_time = time.time()
         self.round_time = t
+        self.gen_count = 0
 
     def draw(self):
         for x in range(self.size):
@@ -164,11 +167,15 @@ class Grid(object):
                     self.grid[x][y][z].draw()
 
     def update(self, t):
-        t = time.time() - self.start_time
+        tr = t - self.start_time
+        if tr <= self.round_time:
+            pass
+        else:
+            self.gen_count += 1
         for x in range(self.size):
             for y in range(self.size):
                 for z in range(self.size):
-                    if t <= self.round_time:
+                    if tr <= self.round_time:
                         self.grid[x][y][z].update(t)
                     else:
                         self.play_round(x, y, z)

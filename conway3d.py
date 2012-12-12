@@ -25,9 +25,12 @@ camera = Camera(pos)
 
 text = pyglet.text.Label('', x=5, y=5, font_name='Arial', font_size=16)
 size_text = pyglet.text.Label('', x=window.width - 200, y=5, font_name='Arial', font_size=16)
+gen_count_text = pyglet.text.Label('Generation 0', x=5, y=window.height - 16, font_name='Arial', font_size=16)
 
 def new_game(gs):
-    global grid, camera, grid_size
+    global grid, camera, grid_size, text, size_text, gen_count_text
+    rt = RoundTime(5)
+
     grid_size = gs
     box_size = 10
     box_spacing = 10
@@ -35,6 +38,10 @@ def new_game(gs):
 
     pos = [0, 0, -((grid_size / 2) * box_size * box_size)]
     camera = Camera(pos)
+
+    text = pyglet.text.Label('', x=5, y=5, font_name='Arial', font_size=16)
+    size_text = pyglet.text.Label('', x=window.width - 200, y=5, font_name='Arial', font_size=16)
+    gen_count_text = pyglet.text.Label('Generation 0', x=5, y=window.height - 16, font_name='Arial', font_size=16)
 
 @window.event
 def on_draw():
@@ -64,6 +71,8 @@ def on_draw():
     text.draw()
     size_text.text = 'Grid Size: %s' % grid_size
     size_text.draw()
+    gen_count_text.text = 'Generation %s' % grid.gen_count
+    gen_count_text.draw()
 
 @window.event
 def on_mouse_scroll(x, y, scroll_x, scroll_y):
@@ -79,9 +88,9 @@ def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     elif dx > 0:
         grid.spin_over_y(3)
     if dy < 0:
-        grid.spin_over_x(-3)
-    elif dy > 0:
         grid.spin_over_x(3)
+    elif dy > 0:
+        grid.spin_over_x(-3)
 
 @window.event
 def on_key_release(symbol, modifiers):
@@ -92,18 +101,19 @@ def on_key_release(symbol, modifiers):
     if symbol == pyglet.window.key.DOWN:
         if grid_size > 2:
             new_game(grid_size - 1)
-
-def update(t):
-    if keys[pyglet.window.key._1]:
+    if symbol == pyglet.window.key._1:
         rt.normal_speed()
         grid.update_rt(rt.time)
-    if keys[pyglet.window.key._2]:
+    if symbol == pyglet.window.key._2:
         rt.double_speed()
         grid.update_rt(rt.time)
-    if keys[pyglet.window.key._3]:
+    if symbol == pyglet.window.key._3:
         rt.triple_speed()
         grid.update_rt(rt.time)
-    grid.update(t)
+
+def update(t):
+    nt = time.time()
+    grid.update(nt)
 
 pyglet.clock.schedule_interval(update,1/24.0)
 pyglet.app.run()
